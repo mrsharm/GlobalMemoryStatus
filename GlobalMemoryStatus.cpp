@@ -50,12 +50,24 @@ int run_win_timer(int seconds_to_run)
     return 0;
 }
 
-void thread_timer_callback(int seconds_to_run)
+BOOL WINAPI consoleHandler(DWORD signal)
+{
+	// Gracefully exit if the user Ctrl-Cs.
+    if (signal == CTRL_C_EVENT)
+    {
+        exit(0);
+    }
+
+    // Don't handle any other signals.
+    return TRUE;
+}
+
+int run_thread_timer(int seconds_to_run)
 {
     while (true) 
     {
         std::this_thread::sleep_for(std::chrono::seconds(seconds_to_run));
-        MEMORYSTATUSEX memStatus; 
+        MEMORYSTATUSEX memStatus;
         memStatus.dwLength = sizeof(memStatus);
 		BOOL fRet = GlobalMemoryStatusEx(&memStatus);
         if (fRet)
@@ -63,15 +75,8 @@ void thread_timer_callback(int seconds_to_run)
             std::cout << "Memory Load: " << memStatus.dwMemoryLoad << "%.\n";
         }
     }
-}
-
-int run_thread_timer(int seconds)
-{
-    std::thread timerThread(thread_timer_callback, seconds);
-    std::cin.get(); // Wait for user to press Enter
 
     // Stop the timer thread
-    timerThread.detach();
     return 0;
 }
 
@@ -86,6 +91,12 @@ int main(int argc, char** argv)
             std::cout << "Invalid number of seconds to run: " << argv[1] << ".\n";
 			return -1;
         }
+    }
+
+    if (!SetConsoleCtrlHandler(consoleHandler, TRUE))
+    {
+        std::cerr << "ERROR: Could not set control handler\n";
+        return 1;
     }
 
     std::cout << "Running Memory Load Timer every " << seconds_to_run << " second(s). To quit: Press Ctrl+C. \n";
