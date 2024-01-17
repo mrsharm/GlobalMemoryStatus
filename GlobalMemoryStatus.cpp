@@ -1,16 +1,7 @@
-// GlobalMemoryStatus.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
 #include <windows.h>
 #include <thread>
 #include <chrono>
-#include <stdio.h>
-#include <tchar.h>
-
-// Assumptions: 
-// 1. 64 bit.
-// 2. With no parameters => display the counter ever 1 second.
 
 VOID win_timer_callback(
     HWND hwnd,        // handle to window for timer messages 
