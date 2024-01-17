@@ -24,11 +24,11 @@ int run_win_timer(int seconds_to_run)
     UINT timer_id = 0;
     bool bStillBusy = true;
 
-    UINT_PTR timerId = SetTimer(/* Window Handle */ NULL, 
-                                /* Timer ID*/ timer_id, 
-                                /* Elasped Time in MSec */ seconds_to_run * 1000, 
-                                /* Callback */ (TIMERPROC)win_timer_callback);
-    if (timerId == 0)
+    UINT_PTR timer_ptr = SetTimer(/* Window Handle */ NULL, 
+                                  /* Timer ID*/ timer_id, 
+                                  /* Elasped Time in MSec */ seconds_to_run * 1000, 
+                                  /* Callback */ (TIMERPROC)win_timer_callback);
+    if (timer_ptr == NULL)
     {
         std::cerr << "Failed to create timer." << std::endl;
         return 1;
