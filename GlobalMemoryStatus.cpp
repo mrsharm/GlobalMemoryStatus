@@ -20,28 +20,33 @@ VOID win_timer_callback(
 
 int run_win_timer(int seconds_to_run)
 {
-    UINT id;
     MSG msg;
+    UINT timer_id = 0;
     bool bStillBusy = true;
 
-	UINT_PTR timerId = 
-        ::SetTimer(NULL,                         // Handle to Window - this is null. 
-				 0,                              // timer identifier 
-				 seconds_to_run * 1000,          // 1-second interval 
-				 (TIMERPROC)win_timer_callback); // Timer callback 
+    UINT_PTR timerId = SetTimer(/* Window Handle */ NULL, 
+                                /* Timer ID*/ timer_id, 
+                                /* Elasped Time in MSec */ seconds_to_run * 1000, 
+                                /* Callback */ (TIMERPROC)win_timer_callback);
     if (timerId == 0)
     {
         std::cerr << "Failed to create timer." << std::endl;
         return 1;
     }
 
+    // Setup message pump to dispatch messages else the callback won't fire.
     while (bStillBusy)
     {
         GetMessage(&msg, NULL, 0, 0);
         DispatchMessage(&msg);
     }
 
-    KillTimer(NULL, 0);
+    if (!KillTimer(NULL, 0))
+    {
+        std::cout << "Failed to kill the timer!\n";
+        return -1;
+    }
+
     return 0;
 }
 
